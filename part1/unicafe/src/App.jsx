@@ -27,22 +27,6 @@ const App = () => {
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
 
-  // TLDR: removed state variables all, average and positivePerCent because they were not necessary
-
-  // removed the all, average and positivePerCent state variables because they do not need to be state variables.
-  // they depend completely on the variables good, neutral and bad
-  // I replaced usage of all, average and positivePerCent in the return statement with 
-  // functions that calculate these values during render.
-
-  // the displayed results will be accurate and up to date
-  // because the app re-renders every time any of the state variables changes.
-  // this means that, when we call calculateAll, which adds up the values good, bad, and neutral
-  // it will take the latest values of these state variables and return a result that reflects these values
-
-  // also, this removes some re-renders that would have occurred
-  // when updating all/average/positivePerCent, since re-renders occur on state change.
-  // yay for optimization!! (?)
-
   const handleGoodFeedback = () => {
     setGood(good + 1)
   }
@@ -55,11 +39,16 @@ const App = () => {
     setBad(bad + 1)
   }
 
-  const calculateAll = () => good + neutral + bad
 
-  const calculateAverage = () => (good - bad) / (good + neutral + bad)
+  // the variables below used to be state variables, but I figured they didn't need to be.
+  // all, average and positivePercent depend on the existing state variables (good, neutral, bad).
+  // when one of those state variables changes, the App component re-renders and runs all the code inside it again.
+  // which means that the variables below are calculated on every render and
+  // their values will be up to date with the latest feedback.
 
-  const calculatePositivePerCent = () => `${good / (good + neutral + bad) * 100}%`
+  const all = good + neutral + bad
+  const average = (good - bad) / all
+  const positivePercent = good / all * 100
 
   return (
     <div>
@@ -76,9 +65,9 @@ const App = () => {
           good={good}
           neutral={neutral}
           bad={bad}
-          all={calculateAll()}
-          average={calculateAverage()}
-          positivePerCent={calculatePositivePerCent()}
+          all={all}
+          average={average}
+          positivePerCent={positivePercent}
         />
       </div>
     </div>
