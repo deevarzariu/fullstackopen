@@ -26,45 +26,40 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
-  const [all, setAll] = useState(0)
-  const [average, setAverage] = useState(0)
-  const [positivePerCent, setPositivePerCent] = useState(0)
+
+  // TLDR: removed state variables all, average and positivePerCent because they were not necessary
+
+  // removed the all, average and positivePerCent state variables because they do not need to be state variables.
+  // they depend completely on the variables good, neutral and bad
+  // I replaced usage of all, average and positivePerCent in the return statement with 
+  // functions that calculate these values during render.
+
+  // the displayed results will be accurate and up to date
+  // because the app re-renders every time any of the state variables changes.
+  // this means that, when we call calculateAll, which adds up the values good, bad, and neutral
+  // it will take the latest values of these state variables and return a result that reflects these values
+
+  // also, this removes some re-renders that would have occurred
+  // when updating all/average/positivePerCent, since re-renders occur on state change.
+  // yay for optimization!! (?)
 
   const handleGoodFeedback = () => {
-    const newGood = good + 1
-    setGood(newGood)
-
-    calculateAll({ good: newGood, neutral, bad })
-    calculateAverage({ good: newGood, neutral, bad })
-    calculatePositivePerCent({ good: newGood, neutral, bad })
+    setGood(good + 1)
   }
 
   const handleNeutralFeedback = () => {
-    const newNeutral = neutral + 1
-    setNeutral(newNeutral)
-
-    calculateAll({ good, neutral: newNeutral, bad })
-    calculateAverage({ good, neutral: newNeutral, bad })
-    calculatePositivePerCent({ good, neutral: newNeutral, bad })
+    setNeutral(neutral + 1)
   }
 
   const handleBadFeedback = () => {
-    const newBad = bad + 1
-    setBad(newBad)
-
-    calculateAll({ good, neutral, bad: newBad })
-    calculateAverage({ good, neutral, bad: newBad })
-    calculatePositivePerCent({ good, neutral, bad: newBad })
+    setBad(bad + 1)
   }
 
-  const calculateAll = ({ good, neutral, bad }) => setAll(good + neutral + bad)
+  const calculateAll = () => good + neutral + bad
 
-  const calculateAverage = ({ good, neutral, bad }) =>
-    setAverage((good - bad) / (good + neutral + bad))
+  const calculateAverage = () => (good - bad) / (good + neutral + bad)
 
-
-  const calculatePositivePerCent = ({ good, neutral, bad }) =>
-    setPositivePerCent(good / (good + neutral + bad) * 100)
+  const calculatePositivePerCent = () => `${good / (good + neutral + bad) * 100}%`
 
   return (
     <div>
@@ -77,7 +72,14 @@ const App = () => {
 
       <div className="statistics">
         <h1>statistics</h1>
-        <Statistics good={good} neutral={neutral} bad={bad} all={all} average={average} positivePerCent={positivePerCent} />
+        <Statistics
+          good={good}
+          neutral={neutral}
+          bad={bad}
+          all={calculateAll()}
+          average={calculateAverage()}
+          positivePerCent={calculatePositivePerCent()}
+        />
       </div>
     </div>
   )
