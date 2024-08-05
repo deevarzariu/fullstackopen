@@ -12,8 +12,22 @@ const App = () => {
 
   const addPerson = (e) => {
     e.preventDefault();
+
+    if (!validateName()) {
+      alert(`${newName} is already added to the phonebook`)
+      return;
+    }
+
     setPersons([...persons, { name: newName }])
     setNewName("")
+  }
+
+  // the newName is valid if there are no other people with the same name in the persons array.
+  // the validate function returns true if the filtered array of same-named people has no elements, 
+  // thus its length is equal to 0.
+  const validateName = () => {
+    const personsWithSameName = persons.filter(({ name }) => name === newName)
+    return personsWithSameName.length === 0
   }
 
   return (
