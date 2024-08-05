@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { createPerson, deletePerson } from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -39,9 +40,15 @@ const App = () => {
       return;
     }
 
-    setPersons([...persons, { name: newName, phone: newPhone, id: persons.length + 1 }])
-    setNewName("")
-    setNewPhone("")
+    createPerson({ name: newName, phone: newPhone })
+      .then(person => {
+        setPersons([...persons, person])
+        setNewName("")
+        setNewPhone("")
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   // the newName is valid if there are no other people with the same name in the persons array.
@@ -50,6 +57,15 @@ const App = () => {
   const validateName = () => {
     const personsWithSameName = persons.filter(({ name }) => name === newName)
     return personsWithSameName.length === 0
+  }
+
+  const handleDelete = ({ id, name }) => {
+    const shouldDelete = confirm(`Delete ${name}?`)
+    if (!shouldDelete) return;
+
+    deletePerson(id).then((data) => {
+      setPersons(persons.filter(person => person.id !== data.id))
+    })
   }
 
   const filteredPersons =
@@ -72,7 +88,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} onDelete={handleDelete} />
     </div>
   )
 }
