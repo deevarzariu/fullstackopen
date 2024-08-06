@@ -5,11 +5,36 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
+const TIMEOUT = 3000
+
+const style = {
+  successMessage: {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: '20px',
+    border: 'green solid 2px',
+    borderRadius: '5px',
+    padding: '10px',
+    marginBottom: '10px',
+  },
+  errorMessage: {
+    color: 'red',
+    background: 'lightgrey',
+    fontSize: '20px',
+    border: 'red solid 2px',
+    borderRadius: '5px',
+    padding: '10px',
+    marginBottom: '10px',
+  }
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filterKeyword, setFilterKeyword] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     axios
@@ -35,24 +60,36 @@ const App = () => {
   const addPerson = () => {
     createPerson({ name: newName, number: newPhone })
       .then(person => {
+        setSuccessMessage(`Added ${person.name}`)
         setPersons([...persons, person])
-        setNewName("")
-        setNewPhone("")
+        resetState();
       })
   }
 
-  const updatePersonNumber = (id) => {
+  const updatePersonNumber = (id, name) => {
     updatePerson({ id, name: newName, number: newPhone })
-      .then(data => {
-        const newPersons = persons.map(person =>
-          person.name === newName ?
-            data :
-            person
+      .then(person => {
+        setSuccessMessage(`Changed ${person.name}'s phone number`)
+        const newPersons = persons.map((p) =>
+          p.name === newName ? person : p
         )
         setPersons(newPersons)
-        setNewName("")
-        setNewPhone("")
+        resetState();
       })
+      .catch(() => {
+        setErrorMessage(`Information of ${name} has already been removed from server`)
+        setTimeout(() => {
+          setErrorMessage("")
+        }, TIMEOUT);
+      })
+  }
+
+  const resetState = () => {
+    setNewName("")
+    setNewPhone("")
+    setTimeout(() => {
+      setSuccessMessage("")
+    }, TIMEOUT);
   }
 
   const handleSubmit = (e) => {
@@ -66,7 +103,7 @@ const App = () => {
     const shouldUpdate = confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)
     if (shouldUpdate) {
       const person = findPerson()
-      updatePersonNumber(person.id)
+      updatePersonNumber(person.id, person.name)
     }
   }
 
@@ -91,6 +128,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {successMessage && <div style={style.successMessage}>{successMessage}</div>}
+      {errorMessage && <div style={style.errorMessage}>{errorMessage}</div>}
       <Filter value={filterKeyword} onChange={handleFilter} />
 
       <h3>Add a new</h3>
