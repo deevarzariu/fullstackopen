@@ -10,10 +10,8 @@ const App = () => {
     if (!name) return;
 
     getCountries(name).then(countries => {
-      console.log(countries)
       setCountries(countries)
     })
-
   }, [name])
 
   const handleNameChange = (e) => {
