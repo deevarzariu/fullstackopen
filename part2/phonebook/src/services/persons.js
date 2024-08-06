@@ -1,8 +1,22 @@
 import axios from "axios";
 const baseUrl = "http://localhost:3001/persons";
 
-export const createPerson = ({ name, phone }) => {
-  return axios.post(baseUrl, { name, phone }).then((response) => response.data);
+export const createPerson = ({ name, number }) => {
+  return axios
+    .post(baseUrl, { name, number })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+export const updatePerson = ({ id, name, number }) => {
+  return axios
+    .put(`${baseUrl}/${id}`, { name, number })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 export const deletePerson = (id) => {

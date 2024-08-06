@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { createPerson, deletePerson } from './services/persons'
+import { createPerson, updatePerson, deletePerson } from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -32,31 +32,46 @@ const App = () => {
 
   }
 
-  const addPerson = (e) => {
-    e.preventDefault();
-
-    if (!validateName()) {
-      alert(`${newName} is already added to the phonebook`)
-      return;
-    }
-
-    createPerson({ name: newName, phone: newPhone })
+  const addPerson = () => {
+    createPerson({ name: newName, number: newPhone })
       .then(person => {
         setPersons([...persons, person])
         setNewName("")
         setNewPhone("")
       })
-      .catch((error) => {
-        console.log(error);
+  }
+
+  const updatePersonNumber = (id) => {
+    updatePerson({ id, name: newName, number: newPhone })
+      .then(data => {
+        const newPersons = persons.map(person =>
+          person.name === newName ?
+            data :
+            person
+        )
+        setPersons(newPersons)
+        setNewName("")
+        setNewPhone("")
       })
   }
 
-  // the newName is valid if there are no other people with the same name in the persons array.
-  // the validate function returns true if the filtered array of same-named people has no elements, 
-  // thus its length is equal to 0.
-  const validateName = () => {
-    const personsWithSameName = persons.filter(({ name }) => name === newName)
-    return personsWithSameName.length === 0
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!findPerson()) {
+      addPerson();
+      return;
+    }
+
+    const shouldUpdate = confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)
+    if (shouldUpdate) {
+      const person = findPerson()
+      updatePersonNumber(person.id)
+    }
+  }
+
+  const findPerson = () => {
+    return persons.find(({ name }) => name === newName)
   }
 
   const handleDelete = ({ id, name }) => {
@@ -84,7 +99,7 @@ const App = () => {
         phone={newPhone}
         onNameChange={handleNameChange}
         onPhoneChange={handlePhoneChange}
-        onSubmit={addPerson}
+        onSubmit={handleSubmit}
       />
 
       <h3>Numbers</h3>
