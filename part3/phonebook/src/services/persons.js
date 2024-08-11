@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseUrl = "http://localhost:3001/api/persons";
+export const baseUrl = "/api/persons";
 
 export const createPerson = ({ name, number }) => {
   console.log("data", name, number);
