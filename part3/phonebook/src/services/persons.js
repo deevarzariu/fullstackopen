@@ -3,7 +3,6 @@ import axios from "axios";
 export const baseUrl = "/api/persons";
 
 export const createPerson = ({ name, number }) => {
-  console.log("data", name, number);
   return axios
     .post(baseUrl, { name, number })
     .then((response) => response.data)
