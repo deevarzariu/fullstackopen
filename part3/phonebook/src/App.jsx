@@ -59,7 +59,6 @@ const App = () => {
   const addPerson = () => {
     createPerson({ name: newName, number: newPhone })
       .then(person => {
-        console.log('person?', person)
         setSuccessMessage(`Added ${person.name}`)
         setPersons([...persons, person])
         resetState();
