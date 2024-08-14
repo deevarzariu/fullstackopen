@@ -63,6 +63,9 @@ const App = () => {
         setPersons([...persons, person])
         resetState();
       })
+      .catch(error => {
+        displayErrorMessage(error.response.data.error)
+      })
   }
 
   const updatePersonNumber = (id, name) => {
@@ -75,11 +78,16 @@ const App = () => {
         setPersons(newPersons)
         resetState();
       })
-      .catch(() => {
-        setErrorMessage(`Information of ${name} has already been removed from server`)
-        setTimeout(() => {
-          setErrorMessage("")
-        }, TIMEOUT);
+      .catch((error) => {
+        let errorMsg = ""
+
+        if (error.response.data.name === "ValidationError") {
+          errorMsg = error.response.data.error;
+        } else {
+          errorMsg = `Information of ${name} has already been removed from server`
+        }
+
+        displayErrorMessage(errorMsg)
       })
   }
 
@@ -88,6 +96,13 @@ const App = () => {
     setNewPhone("")
     setTimeout(() => {
       setSuccessMessage("")
+    }, TIMEOUT);
+  }
+
+  const displayErrorMessage = (errorMessage) => {
+    setErrorMessage(errorMessage)
+    setTimeout(() => {
+      setErrorMessage("")
     }, TIMEOUT);
   }
 
