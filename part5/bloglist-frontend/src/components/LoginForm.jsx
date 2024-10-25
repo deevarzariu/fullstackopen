@@ -21,6 +21,7 @@ const LoginForm = ({ onSubmit }) => {
         type="text"
         id="username"
         name="Username"
+        data-testid="username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
@@ -33,11 +34,12 @@ const LoginForm = ({ onSubmit }) => {
         type="password"
         id="password"
         name="Password"
+        data-testid="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
     </div>
-    <input type="submit" value="log in" />
+    <button type="submit">log in</button>
   </form>;
 };
 

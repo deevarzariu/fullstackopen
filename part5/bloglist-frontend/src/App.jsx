@@ -130,7 +130,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {successMessage && <div style={styles.success}>{successMessage}</div>}
-      {errorMessage && <div style={styles.error}>{errorMessage}</div>}
+      {errorMessage && <div className="error" style={styles.error}>{errorMessage}</div>}
       <div>
         {user.name} logged in.
         <button onClick={handleLogout}>logout</button>
