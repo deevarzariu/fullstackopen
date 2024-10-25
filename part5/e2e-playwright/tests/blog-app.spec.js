@@ -72,7 +72,26 @@ describe("Blog app", () => {
       await page.getByTestId("url").fill("https://www.google.com");
       await page.getByRole("button", { name: "create" }).click();
 
-      // expect... what do we expect
+      await expect(page.getByTestId("blog-heading")).toContainText(
+        "blog title Blog Author"
+      );
+    });
+
+    test("a blog can be liked", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title").fill("blog title");
+      await page.getByTestId("author").fill("Blog Author");
+      await page.getByTestId("url").fill("https://www.google.com");
+      await page.getByRole("button", { name: "create" }).click();
+
+      // the like button is in the details section of the blog
+      await page.getByRole("button", { name: "show" }).click();
+      // show that post has initially zero likes
+      await expect(page.getByTestId("likes")).toContainText("likes 0");
+
+      await page.getByRole("button", { name: "like" }).click();
+      // show that the number of likes gets updated
+      await expect(page.getByTestId("likes")).toContainText("likes 1");
     });
   });
 });

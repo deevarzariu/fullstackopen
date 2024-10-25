@@ -17,13 +17,13 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
   };
 
   return <div style={blogStyle}>
-    <div>
+    <div data-testid="blog-heading">
       {blog.title} {blog.author}
       <button onClick={toggleShowDetails}>{showDetails ? 'hide' : 'show'}</button>
     </div>
     <div className='blog-details' style={showDetails ? null : { display: 'none' }}>
       <div>{blog.url}</div>
-      <div>
+      <div data-testid="likes">
         likes {blog.likes}
         <button onClick={() => onLike(blog)}>like</button>
       </div>
