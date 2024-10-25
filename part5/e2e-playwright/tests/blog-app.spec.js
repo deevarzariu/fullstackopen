@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
+const { login } = require("./helper");
 
 describe("Blog app", () => {
   beforeEach(async ({ page }) => {
@@ -27,17 +28,13 @@ describe("Blog app", () => {
     });
 
     test("succeeds with correct credentials", async ({ page }) => {
-      await page.getByTestId("username").fill("root");
-      await page.getByTestId("password").fill("1234");
-      await page.getByRole("button", { name: "log in" }).click();
+      await login(page, "root", "1234");
 
       await expect(page.getByText("default-user logged in.")).toBeVisible();
     });
 
     test("fails with wrong credentials", async ({ page }) => {
-      await page.getByTestId("username").fill("root");
-      await page.getByTestId("password").fill("12");
-      await page.getByRole("button", { name: "log in" }).click();
+      await login(page, "root", "12");
 
       const errorEl = await page.locator(".error");
       await expect(errorEl).toContainText("invalid password");
@@ -60,9 +57,7 @@ describe("Blog app", () => {
       });
 
       await page.goto("http://localhost:5173");
-      await page.getByTestId("username").fill("root");
-      await page.getByTestId("password").fill("1234");
-      await page.getByRole("button", { name: "log in" }).click();
+      await login(page, "root", "1234");
     });
 
     test("a new blog can be created", async ({ page }) => {
