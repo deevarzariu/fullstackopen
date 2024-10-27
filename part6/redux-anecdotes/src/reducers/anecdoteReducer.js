@@ -20,13 +20,11 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject);
 
 const reducer = (state = initialState, action) => {
-  console.log("state now: ", state);
+  console.log("anecdote state: ", state);
   console.log("action", action);
 
   switch (action.type) {
     case "VOTE":
-      // [...array].sort(sortFn)
-
       return state
         .map((anecdote) =>
           anecdote.id === action.payload.id
