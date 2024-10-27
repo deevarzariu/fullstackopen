@@ -6,8 +6,6 @@ const Filter = () => {
 
   const handleChange = (e) => {
     const filter = e.target.value;
-    // set filter, call action creator
-    // create reducer
     dispatch(setFilter(filter));
   }
 
