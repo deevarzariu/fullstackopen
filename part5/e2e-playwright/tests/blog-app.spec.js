@@ -136,7 +136,7 @@ describe("Blog app", () => {
       await expect(page.getByRole("button", { name: "remove" })).toBeHidden();
     });
 
-    test.only("blogs are arranged in the order according to the likes, the blog with the most likes first", async ({
+    test("blogs are arranged in the order according to the likes, the blog with the most likes first", async ({
       page,
     }) => {
       // this test might be a little slow
