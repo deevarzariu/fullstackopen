@@ -96,7 +96,9 @@ const App = () => {
       const updatedBlog = await blogService.updateBlog(payload);
       updatedBlog.user = blog.user;
 
-      setBlogs(blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog));
+      const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog);
+      updatedBlogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(updatedBlogs);
     } catch (err) {
       showErrorMessage(err.response.data.error);
     }
