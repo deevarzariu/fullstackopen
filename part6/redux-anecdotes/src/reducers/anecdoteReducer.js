@@ -25,14 +25,19 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case "VOTE":
-      return state.map((anecdote) =>
-        anecdote.id === action.payload.id
-          ? {
-              ...anecdote,
-              votes: anecdote.votes + 1,
-            }
-          : anecdote
-      );
+      // [...array].sort(sortFn)
+
+      return state
+        .map((anecdote) =>
+          anecdote.id === action.payload.id
+            ? {
+                ...anecdote,
+                votes: anecdote.votes + 1,
+              }
+            : anecdote
+        )
+        .slice()
+        .sort((a, b) => b.votes - a.votes);
 
     case "CREATE":
       return [...state, action.payload.anecdote];

@@ -1,4 +1,4 @@
-const Anecdote = (anecdote, onVote) => {
+const Anecdote = ({ anecdote, onVote }) => {
   return <div>
     <div>
       {anecdote.content}

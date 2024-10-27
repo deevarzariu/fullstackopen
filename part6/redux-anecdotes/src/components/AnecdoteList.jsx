@@ -11,7 +11,6 @@ const AnecdoteList = () => {
     dispatch(voteAnecdote(id))
   }
 
-  // Make sure that the anecdotes are ordered by the number of votes.
   return <>{anecdotes.map(anecdote =>
     <Anecdote key={anecdote.id} anecdote={anecdote} onVote={vote} />
   )}</>
