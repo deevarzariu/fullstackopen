@@ -5,6 +5,7 @@ import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
+import { useDispatch, useSelector } from 'react-redux';
 
 const styles = {
   error: {
@@ -28,10 +29,12 @@ const styles = {
 };
 
 const App = () => {
+  const notification = useSelector(state => state.notification);
+  const dispatch = useDispatch();
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [_, setErrorMessage] = useState('');
+  const [__, setSuccessMessage] = useState('');
   const togglableRef = useRef();
 
   useEffect(() => {
@@ -52,19 +55,17 @@ const App = () => {
     }
   }, []);
 
-  const showSuccessMessage = (message, milliseconds = 1000) => {
-    setSuccessMessage(message);
+  const showMessage = (message, isError = true, milliseconds = 1000) => {
+    dispatch({
+      type: "SET_NOTIFICATION",
+      payload: { message, isError }
+    });
     setTimeout(() => {
-      setSuccessMessage('');
+      dispatch({
+        type: "UNSET_NOTIFICATION"
+      })
     }, milliseconds);
-  };
-
-  const showErrorMessage = (message, milliseconds = 1000) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage('');
-    }, milliseconds);
-  };
+  }
 
   const handleLogin = async ({ username, password }) => {
     try {
@@ -72,9 +73,9 @@ const App = () => {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
       blogService.setToken(userData.token);
-      showSuccessMessage('login successful!', 2000);
+      showMessage('login successful!', false, 2000);
     } catch (err) {
-      showErrorMessage(err.response.data.error, 5000);
+      showMessage(err.response.data.error, true, 5000);
     }
   };
 
@@ -84,9 +85,9 @@ const App = () => {
     try {
       const newBlog = await blogService.createBlog({ title, author, url });
       setBlogs([...blogs, newBlog]);
-      showSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`, 5000);
+      showMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`, false, 5000);
     } catch (err) {
-      showErrorMessage(err.response.data.error, 5000);
+      showMessage(err.response.data.error, true, 5000);
     }
   };
 
@@ -100,7 +101,7 @@ const App = () => {
       updatedBlogs.sort((a, b) => b.likes - a.likes);
       setBlogs(updatedBlogs);
     } catch (err) {
-      showErrorMessage(err.response.data.error);
+      showMessage(err.response.data.error);
     }
   };
 
@@ -110,7 +111,7 @@ const App = () => {
         await blogService.deleteBlog(blog.id);
         setBlogs(blogs.filter(({ id }) => id !== blog.id));
       } catch (err) {
-        showErrorMessage(err.response.data.error);
+        showMessage(err.response.data.error);
       }
     }
   };
@@ -123,7 +124,7 @@ const App = () => {
   if (!user) {
     return <div>
       <h2>log in to application</h2>
-      {errorMessage && <div className='error' style={styles.error}>{errorMessage}</div>}
+      {notification && notification.isError && <div className='error' style={styles.error}>{notification.message}</div>}
       <LoginForm onSubmit={handleLogin} />
     </div>;
   }
@@ -131,8 +132,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {successMessage && <div style={styles.success}>{successMessage}</div>}
-      {errorMessage && <div style={styles.error}>{errorMessage}</div>}
+      {notification && notification.message && !notification.isError && <div style={styles.success}>{notification.message}</div>}
+      {notification && notification.message && notification.isError && <div style={styles.error}>{notification.message}</div>}
       <div>
         {user.name} logged in.
         <button onClick={handleLogout}>logout</button>
