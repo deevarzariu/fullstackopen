@@ -1,27 +1,33 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react'
 
 const Togglable = forwardRef(({ children, buttonLabel }, refs) => {
-  const [showContent, setShowContent] = useState(false);
+    const [showContent, setShowContent] = useState(false)
 
-  const toggleShowContent = () => {
-    setShowContent(!showContent);
-  };
+    const toggleShowContent = () => {
+        setShowContent(!showContent)
+    }
 
-  useImperativeHandle(refs, () => {
-    return {
-      toggleShowContent
-    };
-  });
+    useImperativeHandle(refs, () => {
+        return {
+            toggleShowContent,
+        }
+    })
 
-  return <>
-    {!showContent && <button onClick={toggleShowContent}>{buttonLabel}</button>}
-    {showContent && <div>
-      {children}
-      <button onClick={toggleShowContent}>cancel</button>
-    </div>}
-  </>;
-});
+    return (
+        <>
+            {!showContent && (
+                <button onClick={toggleShowContent}>{buttonLabel}</button>
+            )}
+            {showContent && (
+                <div>
+                    {children}
+                    <button onClick={toggleShowContent}>cancel</button>
+                </div>
+            )}
+        </>
+    )
+})
 
-Togglable.displayName = 'Togglable';
+Togglable.displayName = 'Togglable'
 
-export default Togglable;
+export default Togglable
