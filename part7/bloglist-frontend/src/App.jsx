@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import Blog from './components/Blog';
-import blogService from './services/blogs';
 import { useDispatch, useSelector } from 'react-redux';
-import { createBlog, fetchBlogs } from './reducers/blogReducer';
-import { setNotification, unsetNotification } from './reducers/notificationReducer';
+import blogService from './services/blogs';
 import loginService from './services/login';
+import { createBlog, deleteBlog, fetchBlogs, updateBlog } from './reducers/blogReducer';
+import { setNotification, unsetNotification } from './reducers/notificationReducer';
+import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
@@ -34,7 +34,6 @@ const App = () => {
   const notification = useSelector(state => state.notification);
   const blogs = useSelector(state => state.blogs);
   const dispatch = useDispatch();
-  const [_, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const togglableRef = useRef();
 
@@ -82,13 +81,10 @@ const App = () => {
 
   const handleLikeBlog = async (blog) => {
     try {
-      const payload = { ...blog, likes: ++blog.likes };
-      const updatedBlog = await blogService.updateBlog(payload);
-      updatedBlog.user = blog.user;
-
-      const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog);
-      updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(updatedBlogs);
+      await updateBlog(dispatch, {
+        ...blog,
+        likes: blog.likes + 1
+      });
     } catch (err) {
       showMessage(err.response.data.error);
     }
@@ -97,8 +93,7 @@ const App = () => {
   const handleRemoveBlog = async (blog) => {
     if (confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
-        await blogService.deleteBlog(blog.id);
-        setBlogs(blogs.filter(({ id }) => id !== blog.id));
+        await deleteBlog(dispatch, blog.id);
       } catch (err) {
         showMessage(err.response.data.error);
       }
