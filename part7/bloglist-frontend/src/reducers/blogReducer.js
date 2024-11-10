@@ -11,7 +11,7 @@ const blogReducer = (state = initialState, action) => {
     case "UPDATE_BLOG":
       return [
         ...state.map((blog) =>
-          blog.id === action.payload.id ? action.payload : blog
+          blog.id === action.payload.id ? action.payload : blog,
         ),
       ].sort((a, b) => b.likes - a.likes);
     case "DELETE_BLOG":

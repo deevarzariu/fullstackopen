@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import PropTypes from "prop-types";
+import { useState } from "react";
 
 const blogStyle = {
   paddingTop: 10,
   paddingLeft: 2,
-  border: 'solid',
+  border: "solid",
   borderWidth: 1,
-  marginBottom: 5
+  marginBottom: 5,
 };
 
 const Blog = ({ blog, user, onLike, onRemove }) => {
@@ -16,23 +16,30 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
     setShowDetails(!showDetails);
   };
 
-  return <div style={blogStyle}>
-    <div data-testid="blog-heading">
-      {blog.title} {blog.author}
-      <button onClick={toggleShowDetails}>{showDetails ? 'hide' : 'show'}</button>
-    </div>
-    <div className='blog-details' style={showDetails ? null : { display: 'none' }}>
-      <div>{blog.url}</div>
-      <div data-testid="likes">
-        likes {blog.likes}
-        <button onClick={() => onLike(blog)}>like</button>
+  return (
+    <div style={blogStyle}>
+      <div data-testid="blog-heading">
+        {blog.title} {blog.author}
+        <button onClick={toggleShowDetails}>
+          {showDetails ? "hide" : "show"}
+        </button>
       </div>
-      {blog.user && <div>added by {blog.user.name}</div>}
-      {blog.user && user.username === blog.user.username &&
-        <button onClick={() => onRemove(blog)}>remove</button>
-      }
+      <div
+        className="blog-details"
+        style={showDetails ? null : { display: "none" }}
+      >
+        <div>{blog.url}</div>
+        <div data-testid="likes">
+          likes {blog.likes}
+          <button onClick={() => onLike(blog)}>like</button>
+        </div>
+        {blog.user && <div>added by {blog.user.name}</div>}
+        {blog.user && user.username === blog.user.username && (
+          <button onClick={() => onRemove(blog)}>remove</button>
+        )}
+      </div>
     </div>
-  </div>;
+  );
 };
 
 Blog.propTypes = {
@@ -47,10 +54,10 @@ Blog.propTypes = {
   user: PropTypes.shape({
     name: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
-    token: PropTypes.string.isRequired
+    token: PropTypes.string.isRequired,
   }),
   onLike: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired
+  onRemove: PropTypes.func.isRequired,
 };
 
 export default Blog;
