@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBlog, fetchBlogs } from './reducers/blogReducer';
+import { setNotification, unsetNotification } from './reducers/notificationReducer';
 import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
-import { useDispatch, useSelector } from 'react-redux';
 
 const styles = {
   error: {
@@ -30,21 +32,14 @@ const styles = {
 
 const App = () => {
   const notification = useSelector(state => state.notification);
+  const blogs = useSelector(state => state.blogs);
   const dispatch = useDispatch();
-  const [blogs, setBlogs] = useState([]);
+  const [_, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [_, setErrorMessage] = useState('');
-  const [__, setSuccessMessage] = useState('');
   const togglableRef = useRef();
 
   useEffect(() => {
-    const getBlogs = async () => {
-      const initialBlogs = await blogService.getAll();
-      const sortedBlogs = [...initialBlogs];
-      sortedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    };
-    getBlogs();
+    fetchBlogs(dispatch);
   }, []);
 
   useEffect(() => {
@@ -56,14 +51,9 @@ const App = () => {
   }, []);
 
   const showMessage = (message, isError = true, milliseconds = 1000) => {
-    dispatch({
-      type: "SET_NOTIFICATION",
-      payload: { message, isError }
-    });
+    setNotification(dispatch, { message, isError })
     setTimeout(() => {
-      dispatch({
-        type: "UNSET_NOTIFICATION"
-      })
+      unsetNotification(dispatch);
     }, milliseconds);
   }
 
@@ -79,12 +69,11 @@ const App = () => {
     }
   };
 
-  const handleCreatePost = async ({ title, author, url }) => {
+  const handleCreatePost = async (data) => {
     togglableRef.current.toggleShowContent();
 
     try {
-      const newBlog = await blogService.createBlog({ title, author, url });
-      setBlogs([...blogs, newBlog]);
+      await createBlog(dispatch, data);
       showMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`, false, 5000);
     } catch (err) {
       showMessage(err.response.data.error, true, 5000);

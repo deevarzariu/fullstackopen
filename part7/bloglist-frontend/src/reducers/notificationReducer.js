@@ -16,4 +16,17 @@ const notificationReducer = (state = initialState, action) => {
   }
 }
 
+export const setNotification = (dispatch, payload) => {
+  dispatch({
+    type: "SET_NOTIFICATION",
+    payload
+  });
+}
+
+export const unsetNotification = dispatch => {
+  dispatch({
+    type: "UNSET_NOTIFICATION"
+  });
+}
+
 export default notificationReducer;
