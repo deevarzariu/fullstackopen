@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
 import {
   createBlog,
   deleteBlog,
@@ -12,6 +11,7 @@ import {
   setNotification,
   unsetNotification,
 } from "./reducers/notificationReducer";
+import { login, logout } from "./reducers/loginReducer";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
@@ -41,8 +41,8 @@ const styles = {
 const App = () => {
   const notification = useSelector((state) => state.notification);
   const blogs = useSelector((state) => state.blogs);
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [user, setUser] = useState(null);
   const togglableRef = useRef();
 
   useEffect(() => {
@@ -52,7 +52,6 @@ const App = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     if (userData) {
-      setUser(userData);
       blogService.setToken(userData.token);
     }
   }, []);
@@ -66,10 +65,7 @@ const App = () => {
 
   const handleLogin = async ({ username, password }) => {
     try {
-      const userData = await loginService.login({ username, password });
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      blogService.setToken(userData.token);
+      await login(dispatch, { username, password });
       showMessage("login successful!", false, 2000);
     } catch (err) {
       showMessage(err.response.data.error, true, 5000);
@@ -113,8 +109,8 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
     localStorage.removeItem("user");
+    logout(dispatch);
   };
 
   if (!user) {
