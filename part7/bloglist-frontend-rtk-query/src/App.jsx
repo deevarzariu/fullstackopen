@@ -6,6 +6,7 @@ import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
 import { NotificationContext } from './context/NotificationContext';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const styles = {
   error: {
@@ -29,25 +30,28 @@ const styles = {
 };
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
   const {
     notification,
     setErrorMessage,
     setSuccessMessage,
     resetMessage
   } = useContext(NotificationContext);
+  const [user, setUser] = useState(null);
   const togglableRef = useRef();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const getBlogs = async () => {
-      const initialBlogs = await blogService.getAll();
-      const sortedBlogs = [...initialBlogs];
-      sortedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    };
-    getBlogs();
-  }, []);
+  const createBlogMutation = useMutation({
+    mutationFn: blogService.createBlog,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(['blogs']);
+      queryClient.setQueryData(['blogs', [...blogs, newBlog]]);
+
+      showSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`, 5000);
+    },
+    onError: (err) => {
+      showErrorMessage(err.response.data.error, 5000);
+    }
+  });
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
@@ -56,6 +60,17 @@ const App = () => {
       blogService.setToken(userData.token);
     }
   }, []);
+
+  const result = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll
+  });
+
+  if (result.isLoading) {
+    return <div>Loading...</div>
+  }
+
+  const blogs = [...result.data].sort((a, b) => b.likes - a.likes);
 
   const showSuccessMessage = (message, milliseconds = 1000) => {
     setSuccessMessage(message);
@@ -85,14 +100,7 @@ const App = () => {
 
   const handleCreatePost = async ({ title, author, url }) => {
     togglableRef.current.toggleShowContent();
-
-    try {
-      const newBlog = await blogService.createBlog({ title, author, url });
-      setBlogs([...blogs, newBlog]);
-      showSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`, 5000);
-    } catch (err) {
-      showErrorMessage(err.response.data.error, 5000);
-    }
+    createBlogMutation.mutate({ title, author, url });
   };
 
   const handleLikeBlog = async (blog) => {
@@ -103,7 +111,7 @@ const App = () => {
 
       const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog);
       updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(updatedBlogs);
+      // setBlogs(updatedBlogs);
     } catch (err) {
       showErrorMessage(err.response.data.error);
     }
@@ -113,7 +121,7 @@ const App = () => {
     if (confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
         await blogService.deleteBlog(blog.id);
-        setBlogs(blogs.filter(({ id }) => id !== blog.id));
+        // setBlogs(blogs.filter(({ id }) => id !== blog.id));
       } catch (err) {
         showErrorMessage(err.response.data.error);
       }
