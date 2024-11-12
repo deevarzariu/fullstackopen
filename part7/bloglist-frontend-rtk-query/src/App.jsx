@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
+import { NotificationContext } from './context/NotificationContext';
 
 const styles = {
   error: {
@@ -30,8 +31,9 @@ const styles = {
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage] = useState('');
+  const { notification, setErrorMessage, setSuccessMessage, unsetNotification } = useContext(NotificationContext);
+  console.log('not', notification);
   const togglableRef = useRef();
 
   useEffect(() => {
@@ -55,14 +57,14 @@ const App = () => {
   const showSuccessMessage = (message, milliseconds = 1000) => {
     setSuccessMessage(message);
     setTimeout(() => {
-      setSuccessMessage('');
+      unsetNotification();
     }, milliseconds);
   };
 
   const showErrorMessage = (message, milliseconds = 1000) => {
     setErrorMessage(message);
     setTimeout(() => {
-      setErrorMessage('');
+      unsetNotification();
     }, milliseconds);
   };
 
@@ -123,7 +125,7 @@ const App = () => {
   if (!user) {
     return <div>
       <h2>log in to application</h2>
-      {errorMessage && <div className='error' style={styles.error}>{errorMessage}</div>}
+      {notification.isError && <div className='error' style={styles.error}>{notification.message}</div>}
       <LoginForm onSubmit={handleLogin} />
     </div>;
   }
@@ -131,8 +133,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {successMessage && <div style={styles.success}>{successMessage}</div>}
-      {errorMessage && <div style={styles.error}>{errorMessage}</div>}
+      {!notification.isError && <div style={styles.success}>{notification.message}</div>}
+      {notification.isError && <div style={styles.error}>{notification.message}</div>}
       <div>
         {user.name} logged in.
         <button onClick={handleLogout}>logout</button>
