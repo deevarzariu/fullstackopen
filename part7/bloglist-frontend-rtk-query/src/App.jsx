@@ -35,7 +35,7 @@ const App = () => {
     notification,
     setErrorMessage,
     setSuccessMessage,
-    unsetNotification
+    resetMessage
   } = useContext(NotificationContext);
   const togglableRef = useRef();
 
@@ -60,14 +60,14 @@ const App = () => {
   const showSuccessMessage = (message, milliseconds = 1000) => {
     setSuccessMessage(message);
     setTimeout(() => {
-      unsetNotification();
+      resetMessage();
     }, milliseconds);
   };
 
   const showErrorMessage = (message, milliseconds = 1000) => {
     setErrorMessage(message);
     setTimeout(() => {
-      unsetNotification();
+      resetMessage();
     }, milliseconds);
   };
 

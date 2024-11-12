@@ -1,32 +1,32 @@
-import { createContext, useState } from "react";
-
-const initialState = {
-  message: "",
-  isError: false
-}
+import { createContext, useReducer } from "react";
+import notificationReducer, { initialState } from "../reducers/notificationReducer";
 
 export const NotificationContext = createContext(initialState);
 
 const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState(initialState);
+  const [notification, dispatchNotification] = useReducer(notificationReducer, initialState);
 
   const setSuccessMessage = (message) => {
-    setNotification({
-      message, isError: false
+    dispatchNotification({
+      type: "SET_SUCCESS_MESSAGE",
+      payload: message
     })
   }
 
   const setErrorMessage = (message) => {
-    setNotification({
-      message, isError: true
+    dispatchNotification({
+      type: "SET_ERROR_MESSAGE",
+      payload: message
     })
   }
 
-  const unsetNotification = () => {
-    setNotification(initialState);
+  const resetMessage = () => {
+    dispatchNotification({
+      type: "RESET_MESSAGE"
+    });
   }
 
-  return <NotificationContext.Provider value={{ notification, setSuccessMessage, setErrorMessage, unsetNotification }}>
+  return <NotificationContext.Provider value={{ notification, setSuccessMessage, setErrorMessage, resetMessage }}>
     {children}
   </NotificationContext.Provider>
 }
