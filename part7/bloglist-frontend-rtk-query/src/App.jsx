@@ -31,9 +31,12 @@ const styles = {
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage] = useState('');
-  const { notification, setErrorMessage, setSuccessMessage, unsetNotification } = useContext(NotificationContext);
-  console.log('not', notification);
+  const {
+    notification,
+    setErrorMessage,
+    setSuccessMessage,
+    unsetNotification
+  } = useContext(NotificationContext);
   const togglableRef = useRef();
 
   useEffect(() => {
@@ -125,7 +128,9 @@ const App = () => {
   if (!user) {
     return <div>
       <h2>log in to application</h2>
-      {notification.isError && <div className='error' style={styles.error}>{notification.message}</div>}
+      {notification.message && notification.isError &&
+        <div className='error' style={styles.error}>{notification.message}</div>
+      }
       <LoginForm onSubmit={handleLogin} />
     </div>;
   }
@@ -133,8 +138,9 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {!notification.isError && <div style={styles.success}>{notification.message}</div>}
-      {notification.isError && <div style={styles.error}>{notification.message}</div>}
+      {notification.message &&
+        <div style={notification.isError ? styles.error : styles.success}>{notification.message}</div>
+      }
       <div>
         {user.name} logged in.
         <button onClick={handleLogout}>logout</button>
