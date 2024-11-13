@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
-import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
 import { NotificationContext } from './context/NotificationContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { UserContext } from './context/UserContext';
 
 const styles = {
   error: {
@@ -36,7 +36,7 @@ const App = () => {
     setSuccessMessage,
     resetMessage
   } = useContext(NotificationContext);
-  const [user, setUser] = useState(null);
+  const { user, login, loginFromStorage, logout } = useContext(UserContext);
   const togglableRef = useRef();
   const queryClient = useQueryClient();
 
@@ -77,11 +77,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData) {
-      setUser(userData);
-      blogService.setToken(userData.token);
-    }
+    loginFromStorage();
   }, []);
 
   const result = useQuery({
@@ -111,10 +107,7 @@ const App = () => {
 
   const handleLogin = async ({ username, password }) => {
     try {
-      const userData = await loginService.login({ username, password });
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      blogService.setToken(userData.token);
+      await login({ username, password })
       showSuccessMessage('login successful!', 2000);
     } catch (err) {
       showErrorMessage(err.response.data.error, 5000);
@@ -136,11 +129,6 @@ const App = () => {
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
-
   if (!user) {
     return <div>
       <h2>log in to application</h2>
@@ -159,7 +147,7 @@ const App = () => {
       }
       <div>
         {user.name} logged in.
-        <button onClick={handleLogout}>logout</button>
+        <button onClick={logout}>logout</button>
       </div>
       <h2>create new</h2>
       <Togglable ref={togglableRef} buttonLabel="new blog">
