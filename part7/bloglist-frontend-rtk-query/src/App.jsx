@@ -53,6 +53,29 @@ const App = () => {
     }
   });
 
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.updateBlog,
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(["blogs"]);
+      const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog);
+      updatedBlogs.sort((a, b) => b.likes - a.likes);
+      queryClient.setQueryData(["blogs"], updatedBlogs);
+    },
+    onError: (err) => {
+      showErrorMessage(err.response.data.error);
+    }
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (err) => {
+      showErrorMessage(err.response.data.error);
+    }
+  })
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
     if (userData) {
@@ -104,27 +127,12 @@ const App = () => {
   };
 
   const handleLikeBlog = async (blog) => {
-    try {
-      const payload = { ...blog, likes: ++blog.likes };
-      const updatedBlog = await blogService.updateBlog(payload);
-      updatedBlog.user = blog.user;
-
-      const updatedBlogs = blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog);
-      updatedBlogs.sort((a, b) => b.likes - a.likes);
-      // setBlogs(updatedBlogs);
-    } catch (err) {
-      showErrorMessage(err.response.data.error);
-    }
+    updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
   };
 
   const handleRemoveBlog = async (blog) => {
     if (confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      try {
-        await blogService.deleteBlog(blog.id);
-        // setBlogs(blogs.filter(({ id }) => id !== blog.id));
-      } catch (err) {
-        showErrorMessage(err.response.data.error);
-      }
+      deleteBlogMutation.mutate(blog.id);
     }
   };
 

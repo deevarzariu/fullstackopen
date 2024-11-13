@@ -1,7 +1,7 @@
-import axios from 'axios';
-const baseUrl = '/api/blogs';
+import axios from "axios";
+const baseUrl = "/api/blogs";
 
-let token = '';
+let token = "";
 
 const setToken = (newToken) => (token = `Bearer ${newToken}`);
 
@@ -26,10 +26,9 @@ const updateBlog = async (blog) => {
       Authorization: token,
     },
   };
-  if (blog.user && blog.user.id) {
-    blog.user = blog.user.id;
-  }
-  const res = await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+
+  const { user, ...data } = blog;
+  const res = await axios.put(`${baseUrl}/${blog.id}`, data, config);
   return res.data;
 };
 
