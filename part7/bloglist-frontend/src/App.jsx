@@ -1,21 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import blogService from "./services/blogs";
-import {
-  createBlog,
-  deleteBlog,
-  fetchBlogs,
-  updateBlog,
-} from "./reducers/blogReducer";
+import { fetchBlogs } from "./reducers/blogReducer";
 import {
   setNotification,
   unsetNotification,
 } from "./reducers/notificationReducer";
 import { login, logout } from "./reducers/loginReducer";
-import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
-import BlogForm from "./components/BlogForm";
-import Togglable from "./components/Togglable";
+import UsersView from "./views/UsersView";
+import UserView from "./views/UserView";
+import HomeView from "./views/HomeView";
+import { fetchUsers } from "./reducers/userReducer";
 
 const styles = {
   error: {
@@ -40,18 +37,21 @@ const styles = {
 
 const App = () => {
   const notification = useSelector((state) => state.notification);
-  const blogs = useSelector((state) => state.blogs);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const togglableRef = useRef();
 
   useEffect(() => {
     fetchBlogs(dispatch);
+    fetchUsers(dispatch);
   }, []);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     if (userData) {
+      dispatch({
+        type: "LOGIN",
+        payload: userData,
+      });
       blogService.setToken(userData.token);
     }
   }, []);
@@ -72,47 +72,12 @@ const App = () => {
     }
   };
 
-  const handleCreatePost = async (data) => {
-    togglableRef.current.toggleShowContent();
-
-    try {
-      await createBlog(dispatch, data);
-      showMessage(
-        `a new blog ${newBlog.title} by ${newBlog.author} added`,
-        false,
-        5000,
-      );
-    } catch (err) {
-      showMessage(err.response.data.error, true, 5000);
-    }
-  };
-
-  const handleLikeBlog = async (blog) => {
-    try {
-      await updateBlog(dispatch, {
-        ...blog,
-        likes: blog.likes + 1,
-      });
-    } catch (err) {
-      showMessage(err.response.data.error);
-    }
-  };
-
-  const handleRemoveBlog = async (blog) => {
-    if (confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      try {
-        await deleteBlog(dispatch, blog.id);
-      } catch (err) {
-        showMessage(err.response.data.error);
-      }
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     logout(dispatch);
   };
 
+  console.log(user);
   if (!user) {
     return (
       <div>
@@ -140,20 +105,16 @@ const App = () => {
         {user.name} logged in.
         <button onClick={handleLogout}>logout</button>
       </div>
-      <h2>create new</h2>
-      <Togglable ref={togglableRef} buttonLabel="new blog">
-        <BlogForm onSubmit={handleCreatePost} />
-      </Togglable>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          onLike={handleLikeBlog}
-          onRemove={handleRemoveBlog}
-        />
-      ))}
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomeView />}>
+          </Route>
+          <Route path="/users" element={<UsersView />} />
+          <Route path="/users/:id" element={<UserView />} />
+        </Routes>
+      </Router>
     </div>
+
   );
 };
 
