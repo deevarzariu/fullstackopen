@@ -13,6 +13,7 @@ import UsersView from "./views/UsersView";
 import UserView from "./views/UserView";
 import HomeView from "./views/HomeView";
 import { fetchUsers } from "./reducers/userReducer";
+import BlogView from "./views/BlogView";
 
 const styles = {
   error: {
@@ -111,6 +112,7 @@ const App = () => {
           </Route>
           <Route path="/users" element={<UsersView />} />
           <Route path="/users/:id" element={<UserView />} />
+          <Route path="/blogs/:id" element={<BlogView />} />
         </Routes>
       </Router>
     </div>

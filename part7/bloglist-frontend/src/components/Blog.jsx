@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const blogStyle = {
   paddingTop: 10,
@@ -19,7 +20,9 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
   return (
     <div style={blogStyle}>
       <div data-testid="blog-heading">
-        {blog.title} {blog.author}
+        <Link key={blog.id} to={`/blogs/${blog.id}`}>
+          {blog.title} {blog.author}
+        </Link>
         <button onClick={toggleShowDetails}>
           {showDetails ? "hide" : "show"}
         </button>
