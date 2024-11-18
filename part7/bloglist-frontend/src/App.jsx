@@ -3,16 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import blogService from "./services/blogs";
 import { fetchBlogs } from "./reducers/blogReducer";
+import { fetchUsers } from "./reducers/userReducer";
 import {
   setNotification,
   unsetNotification,
 } from "./reducers/notificationReducer";
 import { login, logout } from "./reducers/loginReducer";
 import LoginForm from "./components/LoginForm";
+import Navbar from "./components/NavBar";
 import UsersView from "./views/UsersView";
 import UserView from "./views/UserView";
 import HomeView from "./views/HomeView";
-import { fetchUsers } from "./reducers/userReducer";
 import BlogView from "./views/BlogView";
 
 const styles = {
@@ -78,7 +79,6 @@ const App = () => {
     logout(dispatch);
   };
 
-  console.log(user);
   if (!user) {
     return (
       <div>
@@ -102,11 +102,8 @@ const App = () => {
       {notification && notification.message && notification.isError && (
         <div style={styles.error}>{notification.message}</div>
       )}
-      <div>
-        {user.name} logged in.
-        <button onClick={handleLogout}>logout</button>
-      </div>
       <Router>
+        <Navbar user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<HomeView />}>
           </Route>
