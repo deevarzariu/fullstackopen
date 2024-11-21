@@ -61,12 +61,11 @@ blogRouter.get("/:id/comments", async (req, res) => {
 });
 
 blogRouter.post("/:id/comments", middleware.userExtractor, async (req, res) => {
-  console.log(req.body);
   const blog = await Blog.findById(req.params.id);
   if (!blog.comments) {
     blog.comments = [];
   } else {
-    blog.comments.push(req.body.text);
+    blog.comments.push(req.body.comment);
   }
   await blog.save();
   return res.status(201).json(blog);
