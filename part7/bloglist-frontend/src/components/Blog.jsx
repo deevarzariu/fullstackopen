@@ -1,14 +1,9 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const blogStyle = {
-  paddingTop: 10,
-  paddingLeft: 2,
-  border: "solid",
-  borderWidth: 1,
-  marginBottom: 5,
-};
+
 
 const Blog = ({ blog, user, onLike, onRemove }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -18,23 +13,23 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      <div data-testid="blog-heading">
+    <div className="border py-2 px-3">
+      <div data-testid="blog-heading" className="d-flex justify-content-between align-items-center w-full">
         <Link key={blog.id} to={`/blogs/${blog.id}`}>
           {blog.title} {blog.author}
         </Link>
-        <button onClick={toggleShowDetails}>
+        <Button variant="secondary" onClick={toggleShowDetails}>
           {showDetails ? "hide" : "show"}
-        </button>
+        </Button>
       </div>
       <div
         className="blog-details"
         style={showDetails ? null : { display: "none" }}
       >
         <div>{blog.url}</div>
-        <div data-testid="likes">
+        <div data-testid="likes" className="d-flex mt-1 align-items-center">
           likes {blog.likes}
-          <button onClick={() => onLike(blog)}>like</button>
+          <Button size="sm" className="ms-1" onClick={() => onLike(blog)}>like</Button>
         </div>
         {blog.user && <div>added by {blog.user.name}</div>}
         {blog.user && user.username === blog.user.username && (

@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Table } from "react-bootstrap";
 
 const UsersView = () => {
   const users = useSelector(state => state.users)
 
   return <div>
     <h2>Users</h2>
-    <table>
+    <Table>
       <thead>
         <tr>
-          <th></th>
+          <th>name</th>
           <th>blogs created</th>
         </tr>
       </thead>
@@ -21,7 +22,7 @@ const UsersView = () => {
           <td>{user.blogs.length}</td>
         </tr>)}
       </tbody>
-    </table>
+    </Table>
   </div>
 }
 

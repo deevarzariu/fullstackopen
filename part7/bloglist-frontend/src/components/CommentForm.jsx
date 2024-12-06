@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Button, Form } from "react-bootstrap";
 
 const CommentForm = ({ onSubmit }) => {
   const [comment, setComment] = useState("");
@@ -9,10 +10,10 @@ const CommentForm = ({ onSubmit }) => {
     setComment("");
   }
 
-  return <form onSubmit={handleSubmit}>
-    <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} />
-    <input type="submit" value="add comment" />
-  </form>
+  return <Form onSubmit={handleSubmit}>
+    <Form.Control type="text" value={comment} onChange={(e) => setComment(e.target.value)} />
+    <Button className="mt-2" type="submit">add commment</Button>
+  </Form>
 
 }
 

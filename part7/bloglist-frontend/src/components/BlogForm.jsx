@@ -1,5 +1,6 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
+import PropTypes from "prop-types";
+import { Table, Form, Button } from 'react-bootstrap'
 
 const BlogForm = ({ onSubmit }) => {
   const [title, setTitle] = useState("");
@@ -15,10 +16,10 @@ const BlogForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="title">title</label>
-        <input
+    <Form onSubmit={handleSubmit}>
+      <Form.Group>
+        <Form.Label htmlFor="title">Title</Form.Label>
+        <Form.Control
           type="text"
           id="title"
           name="title"
@@ -28,10 +29,10 @@ const BlogForm = ({ onSubmit }) => {
             setTitle(e.target.value);
           }}
         />
-      </div>
-      <div>
-        <label htmlFor="author">author</label>
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label htmlFor="author">Author</Form.Label>
+        <Form.Control
           type="text"
           id="author"
           name="author"
@@ -41,10 +42,10 @@ const BlogForm = ({ onSubmit }) => {
             setAuthor(e.target.value);
           }}
         />
-      </div>
-      <div>
-        <label htmlFor="url">url</label>
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label htmlFor="url">URL</Form.Label>
+        <Form.Control
           type="text"
           id="url"
           name="url"
@@ -54,11 +55,11 @@ const BlogForm = ({ onSubmit }) => {
             setUrl(e.target.value);
           }}
         />
-      </div>
-      <button type="submit" id="createBtn">
+      </Form.Group>
+      <Button variant="primary" className="mt-3" type="submit" id="createBtn">
         create
-      </button>
-    </form>
+      </Button>
+    </Form>
   );
 };
 

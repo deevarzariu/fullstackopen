@@ -67,15 +67,17 @@ const HomeView = () => {
     <Togglable ref={togglableRef} buttonLabel="new blog">
       <BlogForm onSubmit={handleCreatePost} />
     </Togglable>
-    {blogs.map((blog) => (
-      <Blog
-        key={blog.id}
-        blog={blog}
-        user={user}
-        onLike={handleLikeBlog}
-        onRemove={handleRemoveBlog}
-      />
-    ))}
+    <div className="mt-3">
+      {blogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          user={user}
+          onLike={handleLikeBlog}
+          onRemove={handleRemoveBlog}
+        />
+      ))}
+    </div>
   </>
 }
 

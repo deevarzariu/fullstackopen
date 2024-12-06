@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Alert } from "react-bootstrap";
 import blogService from "./services/blogs";
 import { fetchBlogs } from "./reducers/blogReducer";
 import { fetchUsers } from "./reducers/userReducer";
@@ -10,32 +11,11 @@ import {
 } from "./reducers/notificationReducer";
 import { login, logout } from "./reducers/loginReducer";
 import LoginForm from "./components/LoginForm";
-import Navbar from "./components/NavBar";
+import Navigation from "./components/Navigation";
 import UsersView from "./views/UsersView";
 import UserView from "./views/UserView";
 import HomeView from "./views/HomeView";
 import BlogView from "./views/BlogView";
-
-const styles = {
-  error: {
-    color: "red",
-    background: "lightgrey",
-    fontSize: "20px",
-    borderStyle: "solid",
-    borderRadius: "5px",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-  success: {
-    color: "green",
-    background: "lightgrey",
-    fontSize: "20px",
-    borderStyle: "solid",
-    borderRadius: "5px",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-};
 
 const App = () => {
   const notification = useSelector((state) => state.notification);
@@ -81,12 +61,12 @@ const App = () => {
 
   if (!user) {
     return (
-      <div>
+      <div className="container pt-5">
         <h2>log in to application</h2>
         {notification && notification.isError && (
-          <div className="error" style={styles.error}>
+          <Alert variant="danger" className="error">
             {notification.message}
-          </div>
+          </Alert>
         )}
         <LoginForm onSubmit={handleLogin} />
       </div>
@@ -94,26 +74,27 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="container pt-5">
       <h2>blogs</h2>
       {notification && notification.message && !notification.isError && (
-        <div style={styles.success}>{notification.message}</div>
+        <Alert variant="success">{notification.message}</Alert>
       )}
       {notification && notification.message && notification.isError && (
-        <div style={styles.error}>{notification.message}</div>
+        <Alert variant="danger">{notification.message}</Alert>
       )}
       <Router>
-        <Navbar user={user} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<HomeView />}>
-          </Route>
-          <Route path="/users" element={<UsersView />} />
-          <Route path="/users/:id" element={<UserView />} />
-          <Route path="/blogs/:id" element={<BlogView />} />
-        </Routes>
+        <Navigation user={user} onLogout={handleLogout} />
+        <div className="mt-2">
+          <Routes>
+            <Route path="/" element={<HomeView />}>
+            </Route>
+            <Route path="/users" element={<UsersView />} />
+            <Route path="/users/:id" element={<UserView />} />
+            <Route path="/blogs/:id" element={<BlogView />} />
+          </Routes>
+        </div>
       </Router>
     </div>
-
   );
 };
 

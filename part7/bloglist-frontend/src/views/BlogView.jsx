@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import { addComment, updateBlog } from "../reducers/blogReducer";
 import CommentForm from "../components/CommentForm";
 
@@ -33,12 +34,12 @@ const BlogView = () => {
   return <div>
     <h2>{blog.title} {blog.author}</h2>
     <a href={blog.url}>{blog.url}</a>
-    <div>
+    <div className="d-flex align-items-center mt-1">
       {blog.likes} likes
-      <button onClick={handleLikeBlog}>like</button>
+      <Button className="ms-1" size="sm" onClick={handleLikeBlog}>like</Button>
     </div>
     {blog.user && <div>added by {blog.user.name}</div>}
-    <div>
+    <div className="mt-2">
       <h3>comments</h3>
       <CommentForm onSubmit={handleAddComment} />
       {blog.comments &&
